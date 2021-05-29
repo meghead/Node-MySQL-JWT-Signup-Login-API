@@ -9,16 +9,13 @@ var connection = require("../database"); // get our config file
 
 var userLoginCheck = function (req, res) {
 
-	//var em = req.body.email || req.query.email;
 	var post  = {
 		password:req.body.password,
 		email:req.body.email
 	}
 
 	var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
-
 	var table = ["user","password",  md5(post.password), "email", post.email];
-
 	query = mysql.format(query,table);
 
 	connection.query(query,function(err,rows){
@@ -29,7 +26,7 @@ var userLoginCheck = function (req, res) {
 
 			if(rows.length==1){
 				var token = jwt.sign(rows, config.secret, {
-					expiresIn: 1440
+					expiresIn: '12h'
 				});
 				user_id= rows[0].userid;
 				var data  = {
@@ -65,33 +62,3 @@ var userLoginCheck = function (req, res) {
 
 module.exports = userLoginCheck;
 
-
-
-// 	User.findOne({ email: em }, function (err, user) {
-// 		if (err) {
-// 			res.error(err);
-// 		} else if (!user) {
-// 			// res.json({ success: false, message: 'Authentication failed wrong email' });
-// 			res.sendStatus(401);
-
-// 		} else if (user) {
-// 			// check if password matches
-// 			if (!bcrypt.compareSync(req.body.password, user.password)) {
-// 				// res.json({ success: false, message: 'Wrong password' })
-// 				res.sendStatus(401);
-// 			} else {
-// 				// create token
-// 				var token = jwt.sign(user, config.secret, {
-// 					expiresInMinutes: 1440
-// 				});
-// 				// return info including token
-// 				res.json({
-// 					success: true,
-// 					message: 'Token generated',
-// 					token: token,
-// 					currUser: user._id
-// 				});
-// 			}
-// 		}
-// 	});
-// }
