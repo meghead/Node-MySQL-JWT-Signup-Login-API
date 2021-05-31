@@ -28,11 +28,12 @@ var connection = require("../database");
 			var query = "INSERT INTO  ?? SET  ?";
 			var table = ["accounts"];
 			query = mysql.format(query,table);
-			connection.query(query, post, function(err,rows){
+			connection.query(query, post, function(err, data){
 				if(err) {
 					res.json({"Error" : true, "Message" : "Error executing MySQL query"});
 				} else {
-					res.json({"Error" : false, "Message" : "Success"});
+					//res.json({"Error" : false, "Message" : "Success"});
+					res.send(data);
 				}
 			});
 

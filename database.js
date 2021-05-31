@@ -4,7 +4,7 @@ var connection = mysql.createConnection({
     host     : 'localhost',
     user     : 'appspeako2',
     password : 'fuzzybearjones',
-    database : 'nodemy',
+    database : 'appspeako2',
     debug    :  true
 });
 
