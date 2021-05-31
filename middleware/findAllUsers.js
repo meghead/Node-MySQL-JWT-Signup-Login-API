@@ -9,7 +9,7 @@ var findAllUsers = function (req, res) {
 
 	var query = "SELECT * FROM ?? ";
 
-    var table = ["user"];
+    var table = ["accounts"];
 
     query = mysql.format(query,table);
 

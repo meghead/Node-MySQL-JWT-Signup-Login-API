@@ -8,25 +8,15 @@ var connection = require("../database");
  var addNewUser = function(req,res, next){
  	var date = new Date();
     var post  = {
-      first_name:req.body.first_name,
-      last_name:req.body.last_name,
+      name:req.body.name,
       email:req.body.email,
-      password:md5(req.body.password),
-      dob:req.body.dob,
-      latitude:req.body.latitude,
-      longitude:req.body.longitude,
-      device_type:req.body.device_type,
-      device_token:req.body.device_token,
-     // time_zone:req.body.time_zone
-      
+	  gavatar:req.body.gavatar,
+      password:md5(req.body.password)      
   };
   console.log(post);
   		var query = "SELECT email FROM ?? WHERE ??=?";
-
-		var table = ["user", "email", post.email];
-
+		var table = ["accounts", "email", post.email];
 		query = mysql.format(query,table);
-
 		connection.query(query,function(err,rows){
 		if(err) {
 			res.json({"Error" : true, "Message" : "Error executing MySQL query"});
@@ -36,7 +26,7 @@ var connection = require("../database");
 		if(rows.length==0){
 
 			var query = "INSERT INTO  ?? SET  ?";
-			var table = ["user"];
+			var table = ["accounts"];
 			query = mysql.format(query,table);
 			connection.query(query, post, function(err,rows){
 				if(err) {
@@ -48,7 +38,7 @@ var connection = require("../database");
 
 		}
 		else{
-			res.json({"Error" : false, "Message" : "Email Id already registered"});
+			res.json({"Error" : false, "Message" : "Email already registered"});
 		}
 		}
     });
