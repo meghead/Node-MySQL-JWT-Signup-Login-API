@@ -10,8 +10,8 @@ var connection = require("../database");
     var post  = {
       name:req.body.name,
       email:req.body.email,
-	  gavatar:req.body.gavatar,
-      password:md5(req.body.password)      
+	  gavatar:req.body.gavatar,      
+      fireToken:req.body.fireToken      
   };
   console.log(post);
   		var query = "SELECT email FROM ?? WHERE ??=?";
@@ -33,7 +33,13 @@ var connection = require("../database");
 					res.json({"Error" : true, "Message" : "Error executing MySQL query"});
 				} else {
 					//res.json({"Error" : false, "Message" : "Success"});
-					res.send(data);
+					//res.send(data);
+					res.json({
+						"name" : post.name, 
+						"email" : post.email,
+						"gavatar" : post.gavatar, 
+						"insertid": data.insertId
+						});
 				}
 			});
 

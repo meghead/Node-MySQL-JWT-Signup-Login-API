@@ -17,7 +17,7 @@ var app  = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.listen(port, function() {
-    console.log('Express server listening on port ' +port);
+console.log('Express server listening on port ' +port);
 });
 
 

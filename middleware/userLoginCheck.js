@@ -1,4 +1,3 @@
-
 var mysql   = require("mysql");
 var express = require("express");
 var md5 = require("MD5");
@@ -10,12 +9,12 @@ var connection = require("../database"); // get our config file
 var userLoginCheck = function (req, res) {
 
 	var post  = {
-		password:req.body.password,
-		email:req.body.email
+		email:req.body.email,
+		fireToken:req.body.fireToken		
 	}
 
 	var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
-	var table = ["user","password",  md5(post.password), "email", post.email];
+	var table = ["accounts","fireToken", post.fireToken, "email", post.email];
 	query = mysql.format(query,table);
 
 	connection.query(query,function(err,rows){
@@ -25,16 +24,13 @@ var userLoginCheck = function (req, res) {
 		else {
 
 			if(rows.length==1){
-				var token = jwt.sign(rows, config.secret, {
-					expiresIn: '12h'
-				});
-				user_id= rows[0].userid;
+				var token = jwt.sign(rows, config.secret, {expiresIn: '1h'});
+				var refreshToken = jwt.sign(rows, config.refreshTokenSecret, { expiresIn: '168h' })
+				var user_id= rows[0].id;
 				var data  = {
-					user_id:rows[0].userid,
-					device_type:rows[0].device_type,
+					user_id:rows[0].id,					
 					access_token:token,
-					device_token:rows[0].device_token,
-					ip_address:rows[0].ip_address
+					//refreshToken:refreshToken
 				}
 				var query = "INSERT INTO  ?? SET  ?";
 				var table = ["access_token"];
@@ -44,16 +40,17 @@ var userLoginCheck = function (req, res) {
 						res.json({"Error" : true, "Message" : "Error executing MySQL query"});
 					} else {
 						res.json({
-							success: true,
-							message: 'Token generated',
+							//success: true,
+							//message: 'Token generated',
+							currUser: data.user_id,//data.user_id,
 							token: token,
-							currUser: user_id
+							refreshToken: refreshToken							
 						});
            				 } // return info including token
            				});
 			}
 			else {
-				res.json({"Error" : true, "Message" : "wrong email/password combination"});
+				res.json({"Error" : true, "Message" : "wrong email/fireToken combination"});
 			}
 
 		}
