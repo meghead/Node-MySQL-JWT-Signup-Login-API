@@ -16,7 +16,7 @@ var connection = require("../database");
       fireToken:req.body.fireToken      
   };
   console.log(post);
-  		var query = "SELECT email, id, jwtToken, refreshToken FROM ?? WHERE ??=?";
+  		var query = "SELECT email, id FROM ?? WHERE ??=?";
 		var table = ['accounts', 'email', post.email];
 		query = mysql.format(query,table);
 		connection.query(query,function(err,rows){
