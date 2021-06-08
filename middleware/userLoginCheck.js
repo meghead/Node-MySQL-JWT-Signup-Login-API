@@ -1,20 +1,19 @@
 var mysql   = require("mysql");
 var express = require("express");
 var md5 = require("MD5");
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var jwt = require('jsonwebtoken'); 
 var config = require('../config');
-var connection = require("../database"); // get our config file
-
+var connection = require("../database"); 
 
 var userLoginCheck = function (req, res) {
 
 	var post  = {
 		email:req.body.email,
-		fireToken:req.body.fireToken		
+		password:req.body.password		
 	}
 
-	var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
-	var table = ["accounts","fireToken", post.fireToken, "email", post.email];
+	var query = "SELECT ??, ??, ?? FROM ?? WHERE ??=? AND ??=?";
+	var table = ["email","id","name","accounts","password", md5(post.password), "email", post.email];
 	query = mysql.format(query,table);
 
 	connection.query(query,function(err,rows){
@@ -24,16 +23,16 @@ var userLoginCheck = function (req, res) {
 		else {
 
 			if(rows.length==1){
-				var token = jwt.sign(rows, config.secret, {expiresIn: '1h'});
-				var refreshToken = jwt.sign(rows, config.refreshTokenSecret, { expiresIn: '168h' })
+				var jwtToken = jwt.sign(rows, config.secret, {expiresIn: '1h'});
+				var refreshToken = jwt.sign(rows, config.refreshTokenSecret, { expiresIn: '30d' })
 				var user_id= rows[0].id;
 				var data  = {
 					user_id:rows[0].id,					
-					access_token:token,
-					//refreshToken:refreshToken
+					jwtToken:jwtToken,
+					refreshToken:refreshToken
 				}
-				var query = "INSERT INTO  ?? SET  ?";
-				var table = ["access_token"];
+				var query = "UPDATE accounts SET jwtToken = ?, refreshToken = ? WHERE id = ?";
+				var table = [jwtToken,  refreshToken, data.user_id ];
 				query = mysql.format(query,table);
 				connection.query(query, data, function(err,rows){
 					if(err) {
@@ -42,11 +41,13 @@ var userLoginCheck = function (req, res) {
 						res.json({
 							//success: true,
 							//message: 'Token generated',
-							currUser: data.user_id,//data.user_id,
-							token: token,
+							currUser: data.user_id,
+							jwtToken: jwtToken,
 							refreshToken: refreshToken							
 						});
-           				 } // return info including token
+						
+						
+           				 } // return info including jwtToken
            				});
 			}
 			else {

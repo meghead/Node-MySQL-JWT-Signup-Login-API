@@ -7,24 +7,25 @@ var connection = require("../database");
 
  var addNewUser = function(req,res, next){
  	var date = new Date();
+	var hashedpassword = md5(req.body.password)
     var post  = {
       name:req.body.name,
       email:req.body.email,
-	  gavatar:req.body.gavatar,      
+	  gavatar:req.body.gavatar, 
+	  password: hashedpassword,	
       fireToken:req.body.fireToken      
   };
   console.log(post);
-  		var query = "SELECT email FROM ?? WHERE ??=?";
-		var table = ["accounts", "email", post.email];
+  		var query = "SELECT email, id, jwtToken, refreshToken FROM ?? WHERE ??=?";
+		var table = ['accounts', 'email', post.email];
 		query = mysql.format(query,table);
 		connection.query(query,function(err,rows){
 		if(err) {
 			res.json({"Error" : true, "Message" : "Error executing MySQL query"});
 		}
-		else {
+		else {			
 
 		if(rows.length==0){
-
 			var query = "INSERT INTO  ?? SET  ?";
 			var table = ["accounts"];
 			query = mysql.format(query,table);
@@ -32,20 +33,37 @@ var connection = require("../database");
 				if(err) {
 					res.json({"Error" : true, "Message" : "Error executing MySQL query"});
 				} else {
-					//res.json({"Error" : false, "Message" : "Success"});
-					//res.send(data);
-					res.json({
+					
+					var ugavatar = data.insertId + '-user.jpg';
+					var userid = data.insertId;				
+					connection.query('UPDATE ??SET ?? = ? WHERE ?? = ?',
+					['accounts','gavatar',ugavatar,'id',userid], 
+					function(err, rows, fields) 
+					{
+					if (err) throw err;
+					});											
+		res.json({
 						"name" : post.name, 
 						"email" : post.email,
-						"gavatar" : post.gavatar, 
-						"insertid": data.insertId
-						});
+						"gavatar" : ugavatar, 
+						"insertid": userid
+						});					
 				}
 			});
 
 		}
 		else{
-			res.json({"Error" : false, "Message" : "Email already registered"});
+			
+			var fetchedId = rows[0].id;
+			var jwtToken = rows[0].jwtToken;
+			var refreshToken = rows[0].refreshToken;
+						
+			res.json({	
+						"Message" : "Email already registered",
+						"fetchedId": fetchedId,
+						"jwtToken": jwtToken,
+						"refreshToken": refreshToken						
+					});			
 		}
 		}
     });

@@ -10,7 +10,9 @@ var verifyToken = require('./middleware/verifyToken');
 var addNewUser = require('./middleware/addNewUser');
 var userLoginCheck = require('./middleware/userLoginCheck');
 var findAllUsers = require('./middleware/findAllUsers');
+var findAllAudioPosts = require('./middleware/findAllAudioPosts');
 var welcome = require('./middleware/welcome');
+var refresh = require('./middleware/refresh');
 
 var port = process.env.PORT || 3000;
 var app  = express();
@@ -23,6 +25,7 @@ console.log('Express server listening on port ' +port);
 
 app.post('/signup', addNewUser);
 app.post('/userlogin', userLoginCheck);
+app.post('/refresh', refresh);
 
 var apiRoutes = express.Router();
 apiRoutes.use(bodyParser.urlencoded({ extended: true }));
@@ -31,8 +34,10 @@ apiRoutes.use(bodyParser.json());
 app.use('/api', apiRoutes); 
 apiRoutes.use(verifyToken);
 
-apiRoutes.get('/users', verifyToken, findAllUsers);
 apiRoutes.get('/', verifyToken, welcome);
+apiRoutes.get('/users', verifyToken, findAllUsers);
+apiRoutes.get('/audioposts', verifyToken, findAllAudioPosts);
+
 
 
 
