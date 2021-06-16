@@ -1,0 +1,43 @@
+var mysql   = require("mysql");
+var express = require("express");
+var jwt = require('jsonwebtoken'); 
+var config = require('../config');
+var connection = require("../database");
+
+var getFCM = function (req, res) {
+    const bodyuserid = req.body.id;
+
+    var query = "SELECT ?? FROM ?? WHERE userid = ? ";
+    var table = ["audioid", "subscribe", bodyuserid];
+    query = mysql.format(query, table);
+
+    connection.query(query, function (err, rows) {
+        if (err) {
+            res.json({ Error: true, Message: "Error executing MySQL query" });
+        } else {
+            var n = 0;
+            var thislength = rows.length;
+            var newaudioid = rows[n].audioid;
+
+            var query = `SELECT ap.audioid, ap.title, us.name FROM audioposts ap INNER JOIN audioposts a2 ON a2.audioid = ap.opid INNER JOIN accounts us ON us.id = a2.userid WHERE ap.opid = ? AND ap.opid <> 0`;
+            var table = [newaudioid];
+            query = mysql.format(query, table);
+           
+            let result = []; // init result array
+
+            while (n < thislength) {
+                connection.query(query, function (err, data) {
+                    if (err) {
+                        res.json({ Error: true, Message: "Error executing MySQL query" });
+                    } else {
+                        console.log(data);
+                        result.push(data); // push data
+                    }
+                });
+                n++;
+            }
+            res.json(result); // response fetched data
+        }
+    });
+};
+module.exports = getFCM;

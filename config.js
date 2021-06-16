@@ -1,5 +1,6 @@
 module.exports={
 // secret: used when we create and verify JSON Web Tokens
-					secret:'scdijiowmktt',	
-					refreshTokenSecret: 'hallsqiqxo',
+					secret:'jkm45ceolnmsisc',
+					refreshsecret:'siwiufr8748hwef'
+	
 };

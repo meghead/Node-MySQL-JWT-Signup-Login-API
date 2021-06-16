@@ -51,18 +51,17 @@ var connection = require("../database");
 				}
 			});
 
-		}
-		else{
+		}else{
 			
 			var fetchedId = rows[0].id;
-			var jwtToken = rows[0].jwtToken;
-			var refreshToken = rows[0].refreshToken;
+			//var jwtToken = rows[0].jwtToken;
+			//var refreshToken = rows[0].refreshToken;
 						
 			res.json({	
 						"Message" : "Email already registered",
 						"fetchedId": fetchedId,
-						"jwtToken": jwtToken,
-						"refreshToken": refreshToken						
+						//"jwtToken": jwtToken,
+						//"refreshToken": refreshToken						
 					});			
 		}
 		}
