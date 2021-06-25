@@ -6,12 +6,13 @@ var config = require('../config');
 var connection = require("../database"); 
 
 var userLoginCheck = function (req, res) {
+	var hashedpassword = md5(req.body.password);
 	var post  = {
 		email:req.body.email,
-		password:req.body.password		
+		password: hashedpassword		
 	}
 	var query = "SELECT ??, ??, ?? FROM ?? WHERE ??=? AND ??=?";
-	var table = ["email","id","name","accounts","password", md5(post.password), "email", post.email];
+	var table = ["email","id","name","accounts","password", post.password, "email", post.email];
 	query = mysql.format(query,table);
 	
 	connection.query(query,function(err,rows){

@@ -7,7 +7,7 @@ var connection = require("../database");
 
  var addNewUser = function(req,res, next){
  	var date = new Date();
-	var hashedpassword = md5(req.body.password)
+	var hashedpassword = md5(req.body.password);
     var post  = {
       name:req.body.name,
       email:req.body.email,

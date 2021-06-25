@@ -3,7 +3,7 @@ var express = require("express");
 var config = require('../config');
 var connection = require("../database");
 
-var getSingle = function (req, res) {
+var getReplies = function (req, res) {
 	
 	const bodyuserid = req.body.id;
 
@@ -17,23 +17,22 @@ var getSingle = function (req, res) {
     ap.audioid, 
     ap.title, 
     ap.likes,
-	ap.opid,
-	ac.gavatar, 
-    ac.name, 
-    ac.email,
-	ac.bio,
-    (
+    ap.opid,	
+	u.gavatar, 
+    u.name, 
+    u.email,
+       (
         SELECT GROUP_CONCAT(t.tagname)
         FROM entitytag et
         LEFT JOIN tags t on t.tagid = et.tagid
         WHERE et.audioid = ap.audioid
     ) tagname,
     (
-      SELECT count(*) FROM audioposts op WHERE op.opid = ap.audioid
+      select count(*) from audioposts AS apost WHERE apost.opid = ap.audioid
     ) as replycount
-		FROM audioposts ap 
-		LEFT JOIN accounts ac ON ac.id = ap.userid
-      WHERE ap.audioid = ?		
+FROM audioposts ap 
+LEFT JOIN users u ON u.id = ap.userid
+WHERE ap.opid = ?	
 	`	;
 	
 	var table = [bodyuserid];
@@ -48,4 +47,4 @@ var getSingle = function (req, res) {
 	        }
     });
 };
-module.exports = getSingle;
+module.exports = getReplies;

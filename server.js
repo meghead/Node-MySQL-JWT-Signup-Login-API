@@ -15,6 +15,8 @@ var findAllAudioPosts = require('./middleware/findAllAudioPosts');
 var welcome = require('./middleware/welcome');
 var verifyRefresh = require('./middleware/verifyRefresh');
 var getSingle = require('./middleware/getSingle');
+var getReplies = require('./middleware/getReplies');
+var createAudiopost = require('./middleware/createAudiopost');
 var getFCM = require('./middleware/getFCM');
 
 var port = process.env.PORT || 3000;
@@ -28,6 +30,7 @@ console.log('Express server listening on port ' +port);
 app.post('/signup', addNewUser);
 app.post('/userlogin', userLoginCheck);
 app.post('/verifyrefresh', verifyRefresh);
+app.post('/createaudiopost', createAudiopost);
 
 var apiRoutes = express.Router();
 apiRoutes.use(bodyParser.urlencoded({ extended: true }));
@@ -40,8 +43,10 @@ apiRoutes.use(verifyToken);
 apiRoutes.get('/', verifyToken, welcome);
 apiRoutes.get('/users', verifyToken, findAllUsers);
 apiRoutes.get('/audioposts', verifyToken, findAllAudioPosts);
-apiRoutes.get('/getsingle', verifyToken, getSingle);
+apiRoutes.post('/getsingle', verifyToken, getSingle);
 apiRoutes.post('/getfcm', verifyToken, getFCM);
+apiRoutes.post('/getreplies', verifyToken, getReplies);
+//apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
 //apiRoutes.get('/refresh', verifyRefresh, welcome);
 
 
