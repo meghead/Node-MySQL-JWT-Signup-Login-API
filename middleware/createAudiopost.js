@@ -20,14 +20,9 @@ connection.beginTransaction(function(err) {
     }
 
     var audioname = userid + '-' + result.insertId + '.m4a';
-	var newid = result.insertId;
+	var newid = result.insertId;	
 	
-	
-	var query = 'UPDATE audioposts SET audioname = ? WHERE audioid = 438';
-	var table = [audioname, newid];
-	query = mysql.format(query);
-
-    connection.query('UPDATE audioposts SET audioname=? WHERE audioid = ?',  [audioname,newid], function (error, results, fields) {
+	connection.query('UPDATE ?? SET audioname=? WHERE audioid = ?',  ['audioposts',audioname,newid], function (error, results, fields) {
       if (err) { 
         connection.rollback(function() {
           throw err;
@@ -45,8 +40,7 @@ connection.beginTransaction(function(err) {
 						"userid" : userid,
 						"opid" : opid, 
 						"insertid": newid
-						});	
-		//res.json(result);
+				});			
       });
     });
   });
