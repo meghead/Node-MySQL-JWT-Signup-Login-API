@@ -4,7 +4,8 @@ var mysql   = require("mysql");
 var bodyParser  = require("body-parser");
 var md5 = require('MD5');
 var config = require('./config');
-var config = require('./database');  
+var config = require('./database');
+//require('dotenv').config(); 
 
 var verifyToken = require('./middleware/verifyToken');
 //var verifyRefresh = require('./middleware/verifyRefresh');
