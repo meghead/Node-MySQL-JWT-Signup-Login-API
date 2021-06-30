@@ -11,18 +11,19 @@ class DataBase {
     constructor( config ) {
         this.connection = mysql.createConnection( config );
     }
-    query( sql, args ) {
-        return new Promise( ( resolve, reject ) => {
-            this.database.query( sql, args, ( err, rows ) => {
+     query( sql, args ) {
+        let that = this;
+        return new Promise( function ( resolve, reject ) {
+            that.database.query( sql, args, ( err, rows ) => {
                 if ( err )
                     return reject( err );
                 resolve( rows );
             } );
-        } );
+        });
     }
     close() {
         return new Promise( ( resolve, reject ) => {
-            this.connection.end( err => {
+            this.database.end( err => {
                 if ( err )
                     return reject( err );
                 resolve();
@@ -44,22 +45,18 @@ var createAudiopost = async function(req, res, next){
  var tag2 = req.body.tag2;
  var tag3 = req.body.tag3;
  
-//var str_sql_1  = ;                 
-//var str_sql_2  = ;                         
-//var str_sql_3  = ;                                             
-//var str_sql_4  = ;                                                     
-//var str_sql_5  = ;         
-v//ar str_sql_6  = ; 
-
 let row_a, row_b, row_c, row_d, row_e, row_f;
 
 try {
 
 	console.log('before program');
-    row_a = await mydb.query( 'INSERT INTO audioposts (title,userid,opid) VALUES (?,?,? )', [title, userid, opid]);
+    row_a = await mydb.query( 'INSERT INTO audioposts (title,userid,opid) VALUES (?,?,? )', [title,userid,opid]);
+	console.log('after query 1');
      
-    var audioname = userid + '-' + row_a[0].insertId + '.m4a';
-    var newid = row_a[0].insertId;  
+    
+    var newid = row_a[0].insertId;
+	console.log('newid = ' + newid);
+    var audioname = userid + '-' + newid  + '.m4a';	
 	
 	console.log('audioname = ' + audioname + ' and newid = ' + newid);
 
