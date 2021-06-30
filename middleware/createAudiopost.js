@@ -1,42 +1,27 @@
+const util = require( 'util' );
 const mysql = require( 'mysql' );
 
-let config = {
+const config = {
     host     : 'localhost',
     user     : 'appspeako2',
     password : 'fuzzybearjones',
     database: 'appspeako2'
 };
 
-class DataBase {
-    constructor( config ) {
-        this.connection = mysql.createConnection( config );
-    }
-     query( sql, args ) {
-        let that = this;
-        return new Promise( function ( resolve, reject ) {
-            that.database.query( sql, args, ( err, rows ) => {
-                if ( err )
-                    return reject( err );
-                resolve( rows );
-            } );
-        });
-    }
+function makeDb( config ) {
+  const connection = mysql.createConnection( config );  return {
+    query( sql, args ) {
+      return util.promisify( connection.query )
+        .call( connection, sql, args );
+    },
     close() {
-        return new Promise( ( resolve, reject ) => {
-            this.database.end( err => {
-                if ( err )
-                    return reject( err );
-                resolve();
-            } );
-        } );
+      return util.promisify( connection.end ).call( connection );
     }
+  };
 }
 
-const mydb = new DataBase(config);
 
-
-var createAudiopost = async function(req, res, next){
-	
+var createAudiopost = async function(req, res, next){	
 
  var title = req.body.title;
  var userid = req.body.userid;
@@ -47,47 +32,60 @@ var createAudiopost = async function(req, res, next){
  
 let row_a, row_b, row_c, row_d, row_e, row_f;
 
-try {
+const db = makeDb( config )
 
-	console.log('before program');
-    row_a = await mydb.query( 'INSERT INTO audioposts (title,userid,opid) VALUES (?,?,? )', [title,userid,opid]);
-	console.log('after query 1');
-     
-    
-    var newid = row_a[0].insertId;
+try {
+	
+    row_a = await db.query( 'INSERT INTO audioposts (title,userid,opid) VALUES (?,?,? )', [title,userid,opid]);
+    var newid = row_a.insertId;	
 	console.log('newid = ' + newid);
     var audioname = userid + '-' + newid  + '.m4a';	
+	console.log('audioname = ' + audioname);
+
+    row_b = await db.query( 'UPDATE audioposts SET audioname = ? WHERE audioid = ?',[audioname , newid ] );		
 	
-	console.log('audioname = ' + audioname + ' and newid = ' + newid);
-
-    rows_b = await mydb.query( 'UPDATE audioposts SET audioname=?? WHERE audioid = ?',[audioname , newid ] );
-
-    rows_c = await mydb.query( 'SELECT tagid FROM tags WHERE tagname = ?', [tag1] );
-    const tagid1 = row_c[0]['tagid'];
-
-    rows_d = mydb.query( 'INSERT INTO tags SET tagname = ? ',[tag1] );
-    const tagInsertId = row_d[0].insertId;
-
-    //your condition
-    if(tagInsertId) {
-        rows_e = await mydb.query( 'INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tagInsertId, userid ] );    
-    }
-    else {
-        rows_f = mydb.query('INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tagid1, userid]);
-    }
-    console.log("success");
-    res.json({
-                    "title" : title, 
-                    "userid" : userid,
-                    "opid" : opid, 
-                    "insertid": newid
-                        });
+	if(tag1){
+		
+		console.log('tag1 exists');		
+		
+	row_c = await db.query( 'SELECT tagid FROM tags WHERE tagname = ?', [tag1] );
+	
+	console.log('row_c.length = '+ row_c.length);
+	
+	if (row_c.length > 0){	
+	console.log('row_c.tagid exists ');
+	const tagid1 = row_c[0].tagid;
+	console.log('tagid1 = ' + tagid1);
+	row_f = await db.query("INSERT INTO entitytag  (audioid, tagid, userid)  VALUES (?,?,?)", [newid, tagid1, userid ]);
+    var entityinsert = 	row_f.insertId ;
+	console.log('entityinsertid = ' + entityinsert);
+		
+	} else {	
+	row_d = await db.query( 'INSERT INTO tags (tagname) VALUES (?)', [tag1]);	
+    const tagInsertId = row_d.insertId;	
+	console.log('tagInsertId = ' + tagInsertId);
+	row_e = db.query('INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tagInsertId, userid ]);
+	}
+		
+	}
+	console.log('success!');
+				 res.json({
+								"title" : title, 
+								"userid" : userid,
+								"opid" : opid, 
+								"insertid": newid,
+								"tag1": tag1
+						});	
 }
+	
+    
+	
+  
 catch(err) {
     console.log(err.message);
 }
 finally {
-    mydb.close();
+    db.close();
 }
 }
 
