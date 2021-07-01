@@ -61,21 +61,65 @@ try {
 	console.log('entityinsertid = ' + entityinsert);
 		
 	} else {	
-	row_d = await db.query( 'INSERT INTO tags (tagname) VALUES (?)', [tag1]);	
+	row_d = await db.query( 'INSERT IGNORE INTO tags (tagname) VALUES (?)', [tag1]);	
     const tagInsertId = row_d.insertId;	
 	console.log('tagInsertId = ' + tagInsertId);
 	row_e = db.query('INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tagInsertId, userid ]);
 	}
 		
 	}
+	if(tag2){
+		
+		console.log('tag2 exists');		
+		
+	row_c = await db.query( 'SELECT tagid FROM tags WHERE tagname = ?', [tag2] );
+	
+	console.log('row_c.length = '+ row_c.length);
+	
+	if (row_c.length > 0){	
+	console.log('row_c.tagid exists ');
+	const tagid2 = row_c[0].tagid;
+	console.log('tagid2 = ' + tagid2);
+	row_f = await db.query("INSERT INTO entitytag  (audioid, tagid, userid)  VALUES (?,?,?)", [newid, tagid2, userid ]);
+    var entityinsert = 	row_f.insertId ;
+	console.log('entityinsertid = ' + entityinsert);
+		
+	} else {	
+	row_d = await db.query( 'INSERT IGNORE INTO tags (tagname) VALUES (?)', [tag2]);	
+    const tag2InsertId = row_d.insertId;	
+	console.log('tag2InsertId = ' + tag2InsertId);
+	row_e = db.query('INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tag2InsertId, userid ]);
+	}
+		
+	}
+	
+	if(tag3){
+		
+		console.log('tag3 exists');		
+		
+	row_c = await db.query( 'SELECT tagid FROM tags WHERE tagname = ?', [tag3] );
+	
+	console.log('row_c.length = '+ row_c.length);
+	
+	if (row_c.length > 0){	
+	console.log('row_c.tagid exists ');
+	const tagid3 = row_c[0].tagid;
+	console.log('tagid3 = ' + tagid3);
+	row_f = await db.query("INSERT INTO entitytag  (audioid, tagid, userid)  VALUES (?,?,?)", [newid, tagid3, userid ]);
+    var entityinsert = 	row_f.insertId ;
+	console.log('entityinsertid = ' + entityinsert);
+		
+	} else {	
+	row_d = await db.query( 'INSERT IGNORE INTO tags (tagname) VALUES (?)', [tag3]);	
+    const tag3InsertId = row_d.insertId;	
+	console.log('tag3InsertId = ' + tag3InsertId);
+	row_e = db.query('INSERT INTO entitytag SET audioid = ?, tagid = ?, userid = ?', [newid, tag3InsertId, userid ]);
+	}
+		
+	}
+	
 	console.log('success!');
-				 res.json({
-								"title" : title, 
-								"userid" : userid,
-								"opid" : opid, 
-								"insertid": newid,
-								"tag1": tag1
-						});	
+				 res.json(newid);	
 }
 	
     
