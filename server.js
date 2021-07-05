@@ -8,7 +8,6 @@ var config = require('./database');
 //require('dotenv').config(); 
 
 var verifyToken = require('./middleware/verifyToken');
-//var verifyRefresh = require('./middleware/verifyRefresh');
 var addNewUser = require('./middleware/addNewUser');
 var userLoginCheck = require('./middleware/userLoginCheck');
 var findAllUsers = require('./middleware/findAllUsers');
@@ -19,6 +18,8 @@ var getSingle = require('./middleware/getSingle');
 var getReplies = require('./middleware/getReplies');
 var createAudiopost = require('./middleware/createAudiopost');
 var getFCM = require('./middleware/getFCM');
+var postEdit = require('./middleware/postEdit');
+var updateAudiopost = require('./middleware/updateAudiopost');
 
 var port = process.env.PORT || 3000;
 var app  = express();
@@ -31,15 +32,12 @@ console.log('Express server listening on port ' +port);
 app.post('/signup', addNewUser);
 app.post('/userlogin', userLoginCheck);
 app.post('/verifyrefresh', verifyRefresh);
-app.post('/createaudiopost', createAudiopost);
 
 var apiRoutes = express.Router();
 apiRoutes.use(bodyParser.urlencoded({ extended: true }));
 apiRoutes.use(bodyParser.json());
-
 app.use('/api', apiRoutes); 
 apiRoutes.use(verifyToken);
-//apiRoutes.use(verifyRefresh);
 
 apiRoutes.get('/', verifyToken, welcome);
 apiRoutes.get('/users', verifyToken, findAllUsers);
@@ -47,8 +45,9 @@ apiRoutes.get('/audioposts', verifyToken, findAllAudioPosts);
 apiRoutes.post('/getsingle', verifyToken, getSingle);
 apiRoutes.post('/getfcm', verifyToken, getFCM);
 apiRoutes.post('/getreplies', verifyToken, getReplies);
-//apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
-//apiRoutes.get('/refresh', verifyRefresh, welcome);
+apiRoutes.post('/postedit', verifyToken, postEdit);
+apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
+apiRoutes.post('/updateaudiopost', verifyToken, updateAudiopost);
 
 
 
