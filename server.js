@@ -1,6 +1,6 @@
 var express = require("express");
 var http = require('http');
-var mysql   = require("mysql");
+var mysql   = require("mysql2");
 var bodyParser  = require("body-parser");
 var md5 = require('MD5');
 var config = require('./config');
