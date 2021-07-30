@@ -15,11 +15,13 @@ var findAllAudioPosts = require('./middleware/findAllAudioPosts');
 var welcome = require('./middleware/welcome');
 var verifyRefresh = require('./middleware/verifyRefresh');
 var getSingle = require('./middleware/getSingle');
+var getTags = require('./middleware/getTags');
 var getReplies = require('./middleware/getReplies');
 var createAudiopost = require('./middleware/createAudiopost');
 var getFCM = require('./middleware/getFCM');
 var postEdit = require('./middleware/postEdit');
 var updateAudiopost = require('./middleware/updateAudiopost');
+var updatePassword = require('./middleware/updatePassword');
 
 var port = process.env.PORT || 3000;
 var app  = express();
@@ -41,13 +43,15 @@ apiRoutes.use(verifyToken);
 
 apiRoutes.get('/', verifyToken, welcome);
 apiRoutes.get('/users', verifyToken, findAllUsers);
-apiRoutes.get('/audioposts', verifyToken, findAllAudioPosts);
+apiRoutes.post('/audioposts', verifyToken, findAllAudioPosts);
 apiRoutes.post('/getsingle', verifyToken, getSingle);
+apiRoutes.post('/gettags', verifyToken, getTags);
 apiRoutes.post('/getfcm', verifyToken, getFCM);
 apiRoutes.post('/getreplies', verifyToken, getReplies);
 apiRoutes.post('/postedit', verifyToken, postEdit);
 apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
 apiRoutes.post('/updateaudiopost', verifyToken, updateAudiopost);
+apiRoutes.post('/updatepassword', verifyToken, updatePassword);
 
 
 

@@ -22,18 +22,20 @@ var getSingle = function (req, res) {
     ac.name, 
     ac.email,
 	ac.bio,
-    (
-        SELECT GROUP_CONCAT(t.tagname)
-        FROM entitytag et
-        LEFT JOIN tags t on t.tagid = et.tagid
-        WHERE et.audioid = ap.audioid
-    ) tagname,
+	t1.tagname as tag1,    
+    t2.tagname as tag2,   
+    t3.tagname as tag3,
+    
     (
       SELECT count(*) FROM audioposts op WHERE op.opid = ap.audioid
     ) as replycount
 		FROM audioposts ap 
 		LEFT JOIN accounts ac ON ac.id = ap.userid
-      WHERE ap.audioid = ?		
+		LEFT JOIN entitytag et ON et.audioid = ap.audioid
+		LEFT JOIN tags t1 ON et.tagid1 = t1.tagid
+		LEFT JOIN tags t2 ON et.tagid2 = t2.tagid
+		LEFT JOIN tags t3 ON et.tagid3 = t3.tagid	
+		WHERE ap.audioid = ?		
 	`	;
 	
 	var table = [bodyuserid];

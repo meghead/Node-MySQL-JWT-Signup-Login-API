@@ -8,33 +8,36 @@ var connection = require("../database");
 var findAllAudioPosts = function (req, res) {
 
 	var query = `
-	
-	SELECT
+
+     SELECT 
     ap.audioname, 
     ap.userid, 
     ap.audioid, 
     ap.title, 
-    ap.likes,
-	ap.opid,
-	ac.gavatar, 
-    ac.name, 
-    ac.email,
-	ac.bio,
-    (
-        SELECT GROUP_CONCAT(t.tagname)
-        FROM entitytag et
-        LEFT JOIN tags t on t.tagid in (et.tagid1, et.tagid2, et.tagid3)
-        WHERE et.audioid = ap.audioid
-    ) tagname,
-    (
+    ap.likes, 
+    u.gavatar,  
+    u.name, 
+    u.email,   
+    t1.tagname as tag1,    
+    t2.tagname as tag2,   
+    t3.tagname as tag3,
+	(
       SELECT count(*) FROM audioposts op WHERE op.opid = ap.audioid
     ) as replycount
-		FROM audioposts ap 
-		LEFT JOIN accounts ac ON ac.id = ap.userid
-      WHERE ap.opid = '0'		
-	`	
-
-    //var table = ["audioposts ap"];
+	FROM 
+    audioposts ap      	
+	LEFT JOIN 
+    accounts u ON u.id = ap.userid 
+    LEFT JOIN
+    entitytag et ON et.audioid = ap.audioid
+	LEFT JOIN
+    tags t1 ON et.tagid1 = t1.tagid
+	LEFT JOIN
+    tags t2 ON et.tagid2 = t2.tagid
+	LEFT JOIN
+    tags t3 ON et.tagid3 = t3.tagid	
+    WHERE ap.opid = "0"`;	
+		
 
     query = mysql.format(query);
 

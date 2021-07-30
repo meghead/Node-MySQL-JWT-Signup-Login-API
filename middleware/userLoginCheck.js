@@ -11,8 +11,8 @@ var userLoginCheck = function (req, res) {
 		email:req.body.email,
 		password: hashedpassword		
 	}
-	var query = "SELECT ??, ??, ?? FROM ?? WHERE ??=? AND ??=?";
-	var table = ["email","id","name","accounts","password", post.password, "email", post.email];
+	var query = "SELECT * FROM ?? WHERE ??=? AND ??=?";
+	var table = ["accounts","password", post.password, "email", post.email];
 	query = mysql.format(query,table);
 	
 	connection.query(query,function(err,rows){
@@ -24,11 +24,25 @@ var userLoginCheck = function (req, res) {
 				var jwtToken = jwt.sign(rows, config.secret, {expiresIn: '1h'});
 				var refreshToken = jwt.sign(rows, config.refreshsecret, { expiresIn: '30d' });
 				var userid= rows[0].id;
+				var name= rows[0].name;
+				var gavatar= rows[0].gavatar;
+				var email= rows[0].email;
+				var role= rows[0].role;
+				var bio= rows[0].bio;
+				var postcount= rows[0].postcount;
+				var modpoint= rows[0].modpoint;
 				const response = {
 										"status": "Logged in",
 										"jwtToken": jwtToken,
 										"refreshToken": refreshToken,
-										"userid": userid
+										"userid": userid,
+										"name": name,
+										"gavatar": gavatar,
+										"email": email,
+										"role": role,
+										"bio": bio,	
+										"postcount": postcount,
+										"modpoint": modpoint
 									};
    
 				res.json(

@@ -1,4 +1,3 @@
-
 var mysql   = require("mysql");
 var express = require("express");
 var md5 = require("MD5");
@@ -16,9 +15,11 @@ var connection = require("../database");
       fireToken:req.body.fireToken      
   };
   console.log(post);
-  		var query = "SELECT email, id FROM ?? WHERE ??=?";
+  
+  		var query = "SELECT * FROM ?? WHERE ??=?";
 		var table = ['accounts', 'email', post.email];
 		query = mysql.format(query,table);
+		
 		connection.query(query,function(err,rows){
 		if(err) {
 			res.json({"Error" : true, "Message" : "Error executing MySQL query"});
@@ -37,7 +38,7 @@ var connection = require("../database");
 					var ugavatar = data.insertId + '-user.jpg';
 					var userid = data.insertId;				
 					connection.query('UPDATE ??SET ?? = ? WHERE ?? = ?',
-					['accounts','gavatar',ugavatar,'id',userid], 
+					['accounts','gavatar', ugavatar,'id',userid], 
 					function(err, rows, fields) 
 					{
 					if (err) throw err;
@@ -46,7 +47,9 @@ var connection = require("../database");
 						"name" : post.name, 
 						"email" : post.email,
 						"gavatar" : ugavatar, 
-						"insertid": userid
+						"userid": userid,
+						"role" : role,
+						"Message" : "signup success"
 						});					
 				}
 			});
@@ -54,18 +57,28 @@ var connection = require("../database");
 		}else{
 			
 			var fetchedId = rows[0].id;
-			//var jwtToken = rows[0].jwtToken;
-			//var refreshToken = rows[0].refreshToken;
-						
+			var name = rows[0].name;
+			var gavatar = rows[0].gavatar;
+			var email = rows[0].email;
+			var role = rows[0].role;
+			var bio = rows[0].bio;
+			var postcount = rows[0].postcount;
+			var modpoints = rows[0].modpoints;
+								
 			res.json({	
 						"Message" : "Email already registered",
-						"fetchedId": fetchedId,
-						//"jwtToken": jwtToken,
-						//"refreshToken": refreshToken						
+						"userid": fetchedId,
+						"name" : name, 
+						"email" : email,
+						"gavatar" : gavatar,
+						"role" : role,	
+						"bio" : bio,
+						"postcount" : postcount,
+						"modpoints" : modpoints
 					});			
 		}
 		}
-    });
+    });	
 	}
 
    module.exports = addNewUser;
