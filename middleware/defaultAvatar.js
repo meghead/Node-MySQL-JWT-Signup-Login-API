@@ -22,12 +22,10 @@ function makeDb( config ) {
 }
 
 
-var updatePassword = async function(req, res, next){
+var defaultAvatar = async function(req, res, next){
 
  var userid = req.body.userid;
- var hashedpassword = md5(req.body.password);
- var password = hashedpassword;
- 
+
  
 let row_a ;
 
@@ -35,14 +33,14 @@ const db = makeDb( config )
 
 try {
 	
-	row_a = await db.query( "UPDATE accounts SET password= ? WHERE id=?", [password, userid]);	
+	row_a = await db.query( "UPDATE accounts SET gavatar= ? WHERE id=?", ['BigMouthWide.png', userid]);	
 
     if (row_a != 0) {
-		console.log("Success! Password updated");
-		 res.json({"status" : "Success! Password updated"}); 
+		console.log("Success! Avatar updated");
+		 res.json({"status" : "Success! Avatar updated"}); 
 	 }	else {
 		 console.log('failure');
-		 res.json({"status" : "Failure! Password NOT updated"}); 
+		 res.json({"status" : "Failure! Avatar NOT updated"}); 
 	 }
 			
 	}
@@ -55,4 +53,4 @@ finally {
 }
 }
 
- module.exports = updatePassword;
+ module.exports = defaultAvatar;

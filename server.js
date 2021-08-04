@@ -22,6 +22,8 @@ var getFCM = require('./middleware/getFCM');
 var postEdit = require('./middleware/postEdit');
 var updateAudiopost = require('./middleware/updateAudiopost');
 var updatePassword = require('./middleware/updatePassword');
+var defaultAvatar = require('./middleware/defaultAvatar');
+var passwordCheck = require('./middleware/passwordCheck');
 
 var port = process.env.PORT || 3000;
 var app  = express();
@@ -52,6 +54,9 @@ apiRoutes.post('/postedit', verifyToken, postEdit);
 apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
 apiRoutes.post('/updateaudiopost', verifyToken, updateAudiopost);
 apiRoutes.post('/updatepassword', verifyToken, updatePassword);
+apiRoutes.post('/defaultavatar', verifyToken, defaultAvatar);
+apiRoutes.post('/passwordcheck', verifyToken, passwordCheck);
+
 
 
 
