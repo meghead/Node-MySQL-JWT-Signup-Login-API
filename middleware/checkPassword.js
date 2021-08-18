@@ -22,10 +22,10 @@ function makeDb( config ) {
 }
 
 
-var passwordCheck = async function(req, res, next){
+var checkPassword = async function(req, res, next){
 
  var userid = req.body.userid;
- var checkpassword = md5(req.body.password); 
+ var fireToken = req.body.fireToken; 
  
 let row_a ;
 
@@ -37,17 +37,21 @@ try {
 
     if (row_a != 0) {
 		
-		var password = row_a[0].password;       
+		var password = row_a[0].password;		
+        var firepassword = 	fireToken;
+		var length = 16;
+		var trimmedfireToken = firepassword .substring(0, 16);
+		var hashedfiretoken = md5(trimmedfireToken); 
 		
-        if 	(checkpassword == password) {
-		 console.log('true');
-		 res.json({"status" : "true"}); 
+        if 	(hashedfiretoken == password) {
+		 console.log('FireToken Password');
+		 res.json({"status" : "FireToken Password"}); 
 			
 		 
 		} else {
 			
-		console.log("false");
-		 res.json({"status" : "false"}); 
+		console.log("Password Exists");
+		 res.json({"status" : "Password Exists"}); 
 		 
 		}			
 	}
@@ -61,4 +65,4 @@ finally {
 }
 }
 
- module.exports = passwordCheck;
+ module.exports = checkPassword;

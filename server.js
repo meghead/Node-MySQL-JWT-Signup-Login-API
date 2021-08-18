@@ -24,6 +24,11 @@ var updateAudiopost = require('./middleware/updateAudiopost');
 var updatePassword = require('./middleware/updatePassword');
 var defaultAvatar = require('./middleware/defaultAvatar');
 var passwordCheck = require('./middleware/passwordCheck');
+var getMessages = require('./middleware/getMessages');
+var getConversation = require('./middleware/getConversation');
+var messagePostAudio = require('./middleware/messagePostAudio');
+var getUserPosts = require('./middleware/getUserPosts');
+var getMessageReplies = require('./middleware/getMessageReplies');
 
 var port = process.env.PORT || 3000;
 var app  = express();
@@ -36,13 +41,14 @@ console.log('Express server listening on port ' +port);
 app.post('/signup', addNewUser);
 app.post('/userlogin', userLoginCheck);
 app.post('/verifyrefresh', verifyRefresh);
+app.post('/passwordcheck', passwordCheck);
 
 var apiRoutes = express.Router();
 apiRoutes.use(bodyParser.urlencoded({ extended: true }));
 apiRoutes.use(bodyParser.json());
 app.use('/api', apiRoutes); 
-apiRoutes.use(verifyToken);
 
+apiRoutes.use(verifyToken);
 apiRoutes.get('/', verifyToken, welcome);
 apiRoutes.get('/users', verifyToken, findAllUsers);
 apiRoutes.post('/audioposts', verifyToken, findAllAudioPosts);
@@ -55,7 +61,14 @@ apiRoutes.post('/createaudiopost', verifyToken, createAudiopost);
 apiRoutes.post('/updateaudiopost', verifyToken, updateAudiopost);
 apiRoutes.post('/updatepassword', verifyToken, updatePassword);
 apiRoutes.post('/defaultavatar', verifyToken, defaultAvatar);
-apiRoutes.post('/passwordcheck', verifyToken, passwordCheck);
+apiRoutes.post('/getmessages', verifyToken, getMessages);
+apiRoutes.post('/getconversation', verifyToken, getConversation);
+apiRoutes.post('/messagepostaudio', verifyToken, messagePostAudio);
+apiRoutes.post('/getuserposts', verifyToken, getUserPosts);
+apiRoutes.post('/getmessagereplies', verifyToken, getMessageReplies);
+
+
+
 
 
 
